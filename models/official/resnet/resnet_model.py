@@ -365,7 +365,7 @@ def block_group(inputs, filters, block_fn, blocks, strides, is_training, name,
   return tf.identity(inputs, name)
 
 
-def resnet_v1_generator(block_fn, layers, num_classes,
+def resnet_v1_generator(block_fn, layers, num_classes, include_top=True,
                         data_format='channels_first', dropblock_keep_probs=None,
                         dropblock_size=None):
   """Generator for ResNet v1 models.
@@ -431,27 +431,29 @@ def resnet_v1_generator(block_fn, layers, num_classes,
         data_format=data_format, dropblock_keep_prob=dropblock_keep_probs[3],
         dropblock_size=dropblock_size)
 
-    # The activation is 7x7 so this is a global average pool.
-    # TODO(huangyp): reduce_mean will be faster.
-    pool_size = (inputs.shape[1], inputs.shape[2])
-    inputs = tf.layers.average_pooling2d(
-        inputs=inputs, pool_size=pool_size, strides=1, padding='VALID',
-        data_format=data_format)
-    inputs = tf.identity(inputs, 'final_avg_pool')
-    inputs = tf.reshape(
-        inputs, [-1, 2048 if block_fn is bottleneck_block else 512])
-    inputs = tf.layers.dense(
-        inputs=inputs,
-        units=num_classes,
-        kernel_initializer=tf.random_normal_initializer(stddev=.01))
-    inputs = tf.identity(inputs, 'final_dense')
+    if include_top:
+        # The activation is 7x7 so this is a global average pool.
+        # TODO(huangyp): reduce_mean will be faster.
+        pool_size = (inputs.shape[1], inputs.shape[2])
+        inputs = tf.layers.average_pooling2d(
+            inputs=inputs, pool_size=pool_size, strides=1, padding='VALID',
+            data_format=data_format)
+        inputs = tf.identity(inputs, 'final_avg_pool')
+        inputs = tf.reshape(
+            inputs, [-1, 2048 if block_fn is bottleneck_block else 512])
+        inputs = tf.layers.dense(
+            inputs=inputs,
+            units=num_classes,
+            kernel_initializer=tf.random_normal_initializer(stddev=.01))
+        inputs = tf.identity(inputs, 'final_dense')
+
     return inputs
 
   model.default_image_size = 224
   return model
 
 
-def resnet_v1(resnet_depth, num_classes, data_format='channels_first',
+def resnet_v1(resnet_depth, num_classes, include_top=True, data_format='channels_first',
               dropblock_keep_probs=None, dropblock_size=None):
   """Returns the ResNet model for a given size and number of output classes."""
   model_params = {
@@ -468,6 +470,6 @@ def resnet_v1(resnet_depth, num_classes, data_format='channels_first',
 
   params = model_params[resnet_depth]
   return resnet_v1_generator(
-      params['block'], params['layers'], num_classes,
+      params['block'], params['layers'], num_classes, include_top=include_top,
       dropblock_keep_probs=dropblock_keep_probs, dropblock_size=dropblock_size,
       data_format=data_format)

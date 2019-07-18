@@ -357,7 +357,9 @@ def _process_dataset(filenames, synsets, labels, output_directory, prefix,
     output_file = os.path.join(
         output_directory, '%s-%.5d-of-%.5d' % (prefix, shard, num_shards))
 
-    if not os.path.exists(output_file):
+    if os.path.exists(output_file):
+      files.append(output_file)
+    else:
       _process_image_files_batch(coder, output_file, chunk_files,
                                    chunk_synsets, labels)
       tf.logging.info('Finished writing file: %s' % output_file)

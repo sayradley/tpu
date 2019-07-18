@@ -20,6 +20,7 @@ from __future__ import print_function
 
 import os
 import time
+import json
 
 from absl import app
 from absl import flags
@@ -125,7 +126,7 @@ flags.DEFINE_integer(
           ' Recommended value is the number of cores per CPU host.'))
 
 flags.DEFINE_integer(
-    'num_cores', default=None,
+    'num_cores', default=8,
     help=('Number of TPU cores in total. For a single TPU device, this is 8'
           ' because each TPU has 4 chips each with 2 cores.'))
 
@@ -545,17 +546,31 @@ def main(unused_argv):
   params.validate()
   params.lock()
 
-  tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(
-      FLAGS.tpu if (FLAGS.tpu or params.use_tpu) else '',
-      zone=FLAGS.tpu_zone,
-      project=FLAGS.gcp_project)
+  # tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(
+  #     FLAGS.tpu if (FLAGS.tpu or params.use_tpu) else '',
+  #     zone=FLAGS.tpu_zone,
+  #     project=FLAGS.gcp_project)
+
+  tpu_address = ''
+
+  if 'COLAB_TPU_ADDR' not in os.environ:
+    print('ERROR: Not connected to a TPU runtime; please see the first cell in this notebook for instructions!')
+  else:
+    tpu_address = 'grpc://' + os.environ['COLAB_TPU_ADDR']
+
+    with tf.Session(tpu_address) as sess:
+      with open('/content/adc.json', 'r') as f:
+        auth_info = json.load(f)
+
+      tf.contrib.cloud.configure_gcs(sess, credentials=auth_info)
 
   if params.use_async_checkpointing:
     save_checkpoints_steps = None
   else:
     save_checkpoints_steps = max(5000, params.iterations_per_loop)
   config = tf.contrib.tpu.RunConfig(
-      cluster=tpu_cluster_resolver,
+      # cluster=tpu_cluster_resolver,
+      master=tpu_address,
       model_dir=FLAGS.model_dir,
       save_checkpoints_steps=save_checkpoints_steps,
       log_step_count_steps=FLAGS.log_step_count_steps,

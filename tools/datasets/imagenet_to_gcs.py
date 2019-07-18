@@ -293,7 +293,11 @@ def _process_image(filename, coder):
     image_data = coder.cmyk_to_rgb(image_data)
 
   # Decode the RGB JPEG.
-  image = coder.decode_jpeg(image_data)
+  try:
+    image = coder.decode_jpeg(image_data)
+  except Exception as e:
+    print(filename)
+    raise e
 
   # Check that image converted to RGB
   assert len(image.shape) == 3
@@ -352,10 +356,13 @@ def _process_dataset(filenames, synsets, labels, output_directory, prefix,
     chunk_synsets = synsets[shard * chunksize : (shard + 1) * chunksize]
     output_file = os.path.join(
         output_directory, '%s-%.5d-of-%.5d' % (prefix, shard, num_shards))
-    _process_image_files_batch(coder, output_file, chunk_files,
-                               chunk_synsets, labels)
-    tf.logging.info('Finished writing file: %s' % output_file)
-    files.append(output_file)
+
+    if not os.path.exists(output_file):
+      _process_image_files_batch(coder, output_file, chunk_files,
+                                   chunk_synsets, labels)
+      tf.logging.info('Finished writing file: %s' % output_file)
+      files.append(output_file)
+
   return files
 
 

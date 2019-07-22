@@ -545,6 +545,7 @@ class ResNetModel(Model):
         resnet_size=resnet_size,
         bottleneck=True,
         num_classes=num_classes,
+        include_top=include_top,
         num_filters=64,
         kernel_size=7,
         conv_stride=2,

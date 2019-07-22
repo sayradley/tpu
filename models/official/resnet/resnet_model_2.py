@@ -556,3 +556,32 @@ class ResNetModel(Model):
         data_format=data_format,
         dtype=dtype
     )
+
+def _get_block_sizes(resnet_size):
+  """Retrieve the size of each block_layer in the ResNet model.
+  The number of block layers used for the Resnet model varies according
+  to the size of the model. This helper grabs the layer set we want, throwing
+  an error if a non-standard size has been selected.
+  Args:
+    resnet_size: The number of convolutional layers needed in the model.
+  Returns:
+    A list of block sizes to use in building the model.
+  Raises:
+    KeyError: if invalid resnet_size is received.
+  """
+  choices = {
+      18: [2, 2, 2, 2],
+      34: [3, 4, 6, 3],
+      50: [3, 4, 6, 3],
+      101: [3, 4, 23, 3],
+      152: [3, 8, 36, 3],
+      200: [3, 24, 36, 3]
+  }
+
+  try:
+    return choices[resnet_size]
+  except KeyError:
+    err = ('Could not find layers for selected Resnet size.\n'
+           'Size received: {}; sizes allowed: {}.'.format(
+               resnet_size, choices.keys()))
+    raise ValueError(err)

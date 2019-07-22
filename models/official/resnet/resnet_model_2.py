@@ -332,7 +332,7 @@ def block_layer(inputs, filters, bottleneck, block_fn, blocks, strides,
 class Model(object):
   """Base class for building the Resnet Model."""
 
-  def __init__(self, resnet_size, bottleneck, num_classes, include_top=True,
+  def __init__(self, resnet_size, bottleneck, num_classes, include_top,
                num_filters, kernel_size,
                conv_stride, first_pool_size, first_pool_stride,
                block_sizes, block_strides,

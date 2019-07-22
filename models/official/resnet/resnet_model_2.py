@@ -541,7 +541,7 @@ class ResNetModel(Model):
     else:
       bottleneck = True
 
-    super(ImagenetModel, self).__init__(
+    super(ResNetModel, self).__init__(
         resnet_size=resnet_size,
         bottleneck=True,
         num_classes=num_classes,

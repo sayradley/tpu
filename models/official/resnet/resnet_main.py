@@ -585,7 +585,7 @@ def main(unused_argv):
 
   resnet_classifier = tf.contrib.tpu.TPUEstimator(
       use_tpu=params.use_tpu,
-      warm_start_from=params.warm_start_from,
+      warm_start_from=FLAGS.warm_start_from,
       model_fn=resnet_model_fn,
       config=config,
       params=params.as_dict(),

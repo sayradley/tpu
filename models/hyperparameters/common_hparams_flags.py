@@ -93,6 +93,6 @@ def define_common_hparams_flags():
       'eval_after_training', default=False,
       help='Run one eval after the training finishes.')
 
-  flags.DEFINE_bool(
+  flags.DEFINE_string(
       'warm_start_from', default=None,
       help='Warmup from.')

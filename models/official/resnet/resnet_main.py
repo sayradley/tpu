@@ -583,9 +583,15 @@ def main(unused_argv):
           per_host_input_for_training=tf.contrib.tpu.InputPipelineConfig
           .PER_HOST_V2))  # pylint: disable=line-too-long
 
+  warm_start_settings = None
+
+  if FLAGS.warm_start_from:
+    warm_start_settings = tf.estimator.WarmStartSettings(
+        FLAGS.warm_start_from, vars_to_warm_start='^(?!.*dense)')
+
   resnet_classifier = tf.contrib.tpu.TPUEstimator(
       use_tpu=params.use_tpu,
-      warm_start_from=FLAGS.warm_start_from,
+      warm_start_from=warm_start_settings,
       model_fn=resnet_model_fn,
       config=config,
       params=params.as_dict(),

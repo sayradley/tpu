@@ -202,6 +202,7 @@ flags.DEFINE_multi_integer(
     'inference_batch_sizes', [8],
     'Known inference batch sizes used to warm up for each core.')
 
+flags.DEFINE_string('warm_start_from', None, 'Warmup from.')
 
 # The input tensor is in the range of [0, 255], we need to scale them to the
 # range of [0, 1]
@@ -586,6 +587,7 @@ def main(unused_argv):
 
   resnet_classifier = tf.contrib.tpu.TPUEstimator(
       use_tpu=params.use_tpu,
+      warm_start_from=params.warm_start_from,
       model_fn=resnet_model_fn,
       config=config,
       params=params.as_dict(),

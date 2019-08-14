@@ -18,6 +18,7 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
+from tensorflow.python.ops import image_ops
 
 IMAGE_SIZE = 224
 CROP_PADDING = 32

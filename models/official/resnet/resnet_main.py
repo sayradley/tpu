@@ -43,7 +43,6 @@ from tensorflow.contrib.tpu.python.tpu import async_checkpoint
 from tensorflow.contrib.training.python.training import evaluation
 from tensorflow.core.protobuf import rewriter_config_pb2
 from tensorflow.python.estimator import estimator
-from tensorflow.python.ops import image_ops 
 
 common_tpu_flags.define_common_tpu_flags()
 common_hparams_flags.define_common_hparams_flags()

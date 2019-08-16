@@ -144,17 +144,17 @@ def preprocess_for_train(image_bytes, use_bfloat16, image_size=IMAGE_SIZE):
   Returns:
     A preprocessed image `Tensor`.
   """
-  # image = _decode_and_random_crop(image_bytes, image_size)
-  image = tf.io.decode_jpeg(image_bytes)
-
-  image = tf.image.resize_images(
-    image,
-    [image_size, image_size],
-    method=image_ops.ResizeMethodV1.BILINEAR,
-    align_corners=False,
-    preserve_aspect_ratio=False,
-    name=None
-  )
+  image = _decode_and_random_crop(image_bytes, image_size)
+  # image = tf.io.decode_jpeg(image_bytes)
+  #
+  # image = tf.image.resize_images(
+  #   image,
+  #   [image_size, image_size],
+  #   method=image_ops.ResizeMethodV1.BILINEAR,
+  #   align_corners=False,
+  #   preserve_aspect_ratio=False,
+  #   name=None
+  # )
 
   image = _flip(image)
   image = tf.reshape(image, [image_size, image_size, 3])

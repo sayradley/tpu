@@ -216,9 +216,9 @@ def get_lr_schedule(train_steps, num_train_images, train_batch_size):
   train_epochs = train_steps / steps_per_epoch
   return [  # (multiplier, epoch to start) tuples
       (1.0, np.floor(5 / 60 * train_epochs)),
-      (0.1, np.floor(15 / 60 * train_epochs)),
-      (0.01, np.floor(35 / 60 * train_epochs)),
-      (0.001, np.floor(50 / 60 * train_epochs))
+      (0.1, np.floor(10 / 60 * train_epochs)),
+      (0.01, np.floor(20 / 60 * train_epochs)),
+      (0.001, np.floor(30 / 60 * train_epochs))
   ]
 
 

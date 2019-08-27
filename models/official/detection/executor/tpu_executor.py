@@ -43,13 +43,26 @@ class TpuExecutor(object):
     input_partition_dims = None
     num_cores_per_replica = None
 
+    tpu_address = ''
+
+    if 'COLAB_TPU_ADDR' not in os.environ:
+      print('ERROR: Not connected to a TPU runtime; please see the first cell in this notebook for instructions!')
+    else:
+      tpu_address = 'grpc://' + os.environ['COLAB_TPU_ADDR']
+
+      with tf.Session(tpu_address) as sess:
+        with open('/content/adc.json', 'r') as f:
+          auth_info = json.load(f)
+
+        tf.contrib.cloud.configure_gcs(sess, credentials=auth_info)
+
     if params.use_tpu:
-      tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(
-          params.platform.tpu,
-          zone=params.platform.tpu_zone,
-          project=params.platform.gcp_project)
-      tpu_grpc_url = tpu_cluster_resolver.get_master()
-      tf.Session.reset(tpu_grpc_url)
+      # tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(
+      #     params.platform.tpu,
+      #     zone=params.platform.tpu_zone,
+      #     project=params.platform.gcp_project)
+      # tpu_grpc_url = tpu_cluster_resolver.get_master()
+      # tf.Session.reset(tpu_grpc_url)
 
       if params.train.input_partition_dims is not None:
         num_cores_per_replica = params.train.num_cores_per_replica
@@ -58,8 +71,8 @@ class TpuExecutor(object):
         input_partition_dims = [
             None if x == 'None' else x for x in input_partition_dims
         ]
-    else:
-      tpu_cluster_resolver = None
+    # else:
+    #   tpu_cluster_resolver = None
 
     # Sets up config for TPUEstimator.
     tpu_config = tf.contrib.tpu.TPUConfig(
@@ -70,7 +83,8 @@ class TpuExecutor(object):
     )
 
     run_config = tf.contrib.tpu.RunConfig(
-        cluster=tpu_cluster_resolver,
+        # cluster=tpu_cluster_resolver,
+        master=tpu_address,
         evaluation_master=params.platform.eval_master,
         model_dir=params.model_dir,
         log_step_count_steps=params.train.iterations_per_loop,

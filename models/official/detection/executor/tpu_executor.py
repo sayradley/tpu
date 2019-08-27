@@ -125,7 +125,7 @@ class TpuExecutor(object):
         yield_single_examples=False)
     losses = collections.defaultdict(lambda: 0.0)
     for _ in range(eval_steps):
-      outputs = predictor.next()
+      outputs = next(predictor)
       predictions = {}
       groundtruths = {}
       for key, val in outputs.items():

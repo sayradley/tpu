@@ -21,7 +21,6 @@ from __future__ import print_function
 
 import os
 import pprint
-import json
 from absl import flags
 
 import tensorflow as tf

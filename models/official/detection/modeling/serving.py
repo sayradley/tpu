@@ -240,10 +240,19 @@ def serving_model_graph_builder(output_image_info,
         params.anchor.anchor_size, (height, width))
 
     model_fn = factory.model_generator(params)
+
+    multilevel_boxes = input_anchor.multilevel_boxes
+
+    batch_size = features['images'].shape[0]
+
+    # Diry fix, but still fix
+    for mb in multilevel_boxes:
+        multilevel_boxes[mb] = tf.tile(tf.reshape(multilevel_boxes[mb], [1, *multilevel_boxes[mb].shape]), [batch_size, 1, 1, 1])
+
     model_outputs = model_fn.build_outputs(
         features['images'],
         labels={
-            'anchor_boxes': input_anchor.multilevel_boxes,
+            'anchor_boxes': multilevel_boxes,
             'image_info': features['image_info'],
         },
         mode=mode_keys.PREDICT)

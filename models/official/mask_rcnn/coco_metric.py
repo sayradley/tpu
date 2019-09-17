@@ -196,10 +196,10 @@ def generate_segmentation_from_masks(masks,
     # Reference: https://github.com/facebookresearch/Detectron/blob/master/detectron/utils/boxes.py#L227  # pylint: disable=line-too-long
     # The `boxes` in the reference implementation is in [x1, y1, x2, y2] form,
     # whereas `boxes` here is in [x1, y1, w, h] form
-    w_half = boxes[:, 2] * .5
-    h_half = boxes[:, 3] * .5
-    x_c = boxes[:, 0] + w_half
-    y_c = boxes[:, 1] + h_half
+    h_half = (boxes[:, 2] - boxes[:, 0]) * .5
+    w_half = (boxes[:, 3] - boxes[:, 1]) * .5
+    y_c = (boxes[:, 2] + boxes[:, 0]) * .5
+    x_c = (boxes[:, 3] + boxes[:, 1]) * .5
 
     w_half *= scale
     h_half *= scale
